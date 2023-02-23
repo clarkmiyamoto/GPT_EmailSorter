@@ -8,9 +8,18 @@ class Mailer:
         self.gmail = Gmail()
         self.messages = None
 
-    def get_emails(self, query_params, datafile_path):
-        # Get messages that are:
-        # Newer than a month old, and are labeled as "PRESS PASS REQUESTS"
+    def get_emails(self, query_params: dict, datafile_path: str = ''):
+        '''
+        Args:
+        - query_params (dict): Parameters to filter emails.
+        - datafile_path (str): Where should these emails save (saves as a CSV).
+            Default option:
+            datafile_path = '': Defaults to NOT saving a copy.
+            
+        Returns:
+        - df (pd.DataFrame): Messages given in a DataFrame structure.
+        '''
+        # Get messages according to `query_params`
         self.messages = self.gmail.get_messages(query=construct_query(query_params))
 
         # Turns data into pd.DataFrame, then saves as CSV
@@ -20,11 +29,19 @@ class Mailer:
             df.loc[len(df)] = [message.recipient, message.sender, message.subject, message.date, message.plain]
 
         # Saves a copy as a CSV
-        df.to_csv(datafile_path)
+        if (datafile_path != ''):
+            df.to_csv(datafile_path)
 
         return df
     
-    def add_label(self, message, label_name: str):
+    def add_label(self, message: 'Message', label_name: str):
+        '''
+        Adds a pre-existing label to a message.
+        
+        Args:
+        - message (Message): simplegmail Message object. The email to be labeled.
+        - label_name (str): Name of label.
+        '''
         # Package label name
         labels = self.gmail.list_labels()
         label = list(filter(lambda x: x.name == label_name, labels))[0]
