@@ -30,4 +30,4 @@ class Mailer:
         label = list(filter(lambda x: x.name == label_name, labels))[0]
 
         # Label message with new label
-        message.add_label(finance_label) 
+        message.add_label(label) 

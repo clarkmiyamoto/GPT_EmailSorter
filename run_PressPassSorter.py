@@ -1,7 +1,8 @@
 from emails import Mailer
-import language_processing
+from language_processing import NLP
 
 import pandas as pd
+from tqdm import tqdm
 
 '''
 Sort email for Press Passes
@@ -15,10 +16,10 @@ Requirements
 def check_criteria(df):
     # Initalize NLP
     nlp = NLP()
-    df['contains_place'] = [nlp.contains_place(text) for text in df['Body']]
-    df['contains_portfolio'] = [nlp.contains_portfolio(text) for text in df['Body']]
+    df['contains_place'] = [nlp.contains_place(text) for text in tqdm(df['Body'])]
+    df['contains_portfolio'] = [nlp.contains_portfolio(text) for text in tqdm(df['Body'])]
 
-    df['is_formatted_correctly'] = df[columns].all(axis=1)
+    df['is_formatted_correctly'] = df[['contains_place', 'contains_portfolio']].all(axis=1)
     correctly_formatted_rows = df.index[df['is_formatted_correctly']].tolist()
 
     return df, correctly_formatted_rows
@@ -32,16 +33,21 @@ if __name__ == '__main__':
     datafile_path = './emails.csv'
     
     # Get all press pass email
+    print('Getting mail...')
     mail = Mailer()
-    df = mail.get_emails(query_params, datafile_path = datafile_path)
-        
+    df = mail.get_emails(query_params, datafile_path = datafile_path).astype(str)
+    print('Got mail!')
+
     # In DataFrame, notes which emails meet criteria
+    print('Checking criteria...')
     df, correct_ones = check_criteria(df)
+    print('Criterias all checked')
 
     # Updates GMail label to "VERIFIED" if meeting critiera
-    for idx in correct_ones:
+    print('Relabbeling Emails')
+    for idx in tqdm(correct_ones):
         mail.add_label(mail.messages[idx], "VERIFIED")
-    
+    print('Finished!')
 
 
 
