@@ -31,6 +31,8 @@ if __name__ == '__main__':
             "labels":["PRESS PASS REQUESTS"]
         }
     datafile_path = './emails.csv'
+    verified_label = 'VERIFIED'
+
     
     # Get all press pass email
     print('Getting mail...')
@@ -43,10 +45,10 @@ if __name__ == '__main__':
     df, correct_ones = check_criteria(df)
     print('Criterias all checked')
 
-    # Updates GMail label to "VERIFIED" if meeting critiera
+    # Updates GMail label to `verified_label` if meeting critiera
     print('Relabbeling Emails')
     for idx in tqdm(correct_ones):
-        mail.add_label(mail.messages[idx], "VERIFIED")
+        mail.add_label(mail.messages[idx], verified_label)
     print('Finished!')
 
 
