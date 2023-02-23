@@ -1,4 +1,4 @@
-# GPT_EmailSorter
+# NLP_EmailSorter
 Uses NLP to help you parse your emails 
 
 # Why?
